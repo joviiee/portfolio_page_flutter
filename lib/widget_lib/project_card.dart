@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:portfolio_page/models/projects_model.dart';
 import 'package:portfolio_page/theme/theme.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ProjectCard extends StatelessWidget {
-  const ProjectCard({super.key});
+  final ProjectsModel project;
+  const ProjectCard({super.key, required this.project});
 
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
-    dynamic cardRadius, cardMargin;
+    double cardRadius = 10, cardMargin = 7;
 
-    if (screenWidth < 540) {
-      cardRadius = 20;
-      cardMargin = 7;
-    } else if (540 <= screenWidth && screenWidth <= 1024) {
+    if (540 <= screenWidth && screenWidth <= 1024) {
       cardRadius = 15;
       cardMargin = 25;
     } else if (1024 < screenWidth && screenWidth <= 1500) {
@@ -32,42 +31,84 @@ class ProjectCard extends StatelessWidget {
       ),
       child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
+                flex: 5,
                 child: Image.asset(
-              'assets/images/image.jpg',
-              fit: BoxFit.cover,
-            )),
+                  project.imagePath,
+                  fit: BoxFit.cover,
+                )),
             Padding(
-              padding: EdgeInsets.only(left: screenWidth * 0.01, top: 4),
+              padding: EdgeInsets.only(left: 3, top: 4),
+              child: Text(
+                project.name,
+                style: TextStyle(
+                    fontSize:
+                        screenWidth <= 1024 && screenWidth > 560 ? 15 : 12,
+                    color: colorScheme.onSecondary),
+              ),
+            ),
+            Expanded(
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Text(
-                    'Personality Prediction Model',
-                    style:
-                        TextStyle(fontSize: 12, color: colorScheme.onSecondary),
+                  Expanded(
+                    flex: 6,
+                    child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: project.techUsed.length,
+                        itemBuilder: (context, index) {
+                          return Tooltip(
+                            message: project.techUsed[index].name,
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 5),
+                              child: CircleAvatar(
+                                backgroundColor: colorScheme.onPrimary,
+                                radius: 10,
+                                child: ClipOval(
+                                  child: Image.asset(
+                                    project.techUsed[index].assetPath,
+                                    fit: BoxFit.cover,
+                                    width: 20,
+                                    height: 20,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        }),
+                  ),
+                  Expanded(
+                    child: IconButton(
+                      tooltip: 'View on github',
+                      icon: Container(
+                        clipBehavior: Clip.antiAlias,
+                        decoration: BoxDecoration(
+                            color: colorScheme.tertiary,
+                            borderRadius: BorderRadius.circular(11)),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(11),
+                          child: Image.asset(
+                            'assets/logos/social_media/github.png',
+                            fit: BoxFit.cover,
+                            width: 22,
+                            height: 22,
+                          ),
+                        ),
+                      ),
+                      onPressed: () async {
+                        final scaffoldMessenger = ScaffoldMessenger.of(context);
+                        if (await canLaunchUrl(project.gitUrl)) {
+                          await launchUrl(project.gitUrl);
+                        } else {
+                          scaffoldMessenger.showSnackBar(SnackBar(
+                              content: Text("Could not validate the form")));
+                        }
+                      },
+                    ),
                   ),
                 ],
               ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Padding(
-                  padding:
-                      EdgeInsets.only(right: screenWidth * 0.01, bottom: 4),
-                  child: TextButton(
-                    onPressed: () {},
-                    child: Text(
-                      'Know more ...',
-                      style: TextStyle(
-                          fontSize: 12, color: colorScheme.onSecondary),
-                    ),
-                  ),
-                ),
-              ],
             )
           ]),
     );

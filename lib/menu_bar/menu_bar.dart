@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:portfolio_page/theme/theme.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MyMenuBar extends StatelessWidget {
   final GlobalKey projectsKey, skillsKey, contactMeKey;
-  MyMenuBar(
-      {Key? key,
+  const MyMenuBar(
+      {super.key,
       required this.projectsKey,
       required this.contactMeKey,
-      required this.skillsKey})
-      : super(key: key);
+      required this.skillsKey});
 
 // Function to scroll to the specified section
   void scrollToSection(GlobalKey key) {
@@ -25,7 +25,6 @@ class MyMenuBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
     double barHeight = 80;
 
     if (screenWidth < 540) {
@@ -97,7 +96,18 @@ class MyMenuBar extends StatelessWidget {
                                   fontWeight: FontWeight.normal,
                                   fontFamily: 'Inter'))),
                       TextButton(
-                          onPressed: () {},
+                          onPressed: () async {
+                        final scaffoldMessenger = ScaffoldMessenger.of(context);
+                        if (await canLaunchUrl(Uri.parse(
+                            'https://drive.google.com/file/d/1tavZIXs_NWjnPqc6lDX3OmIGt35nQdXh/view?usp=sharing'))) {
+                          await launchUrl(Uri.parse(
+                              'https://drive.google.com/file/d/1tavZIXs_NWjnPqc6lDX3OmIGt35nQdXh/view?usp=sharing'));
+                        } else {
+                          scaffoldMessenger.showSnackBar(SnackBar(
+                              content:
+                                  Text("Could not load resume at the moment")));
+                        }
+                      },
                           child: Text('RESUME',
                               style: TextStyle(
                                   color: colorScheme.onPrimary,

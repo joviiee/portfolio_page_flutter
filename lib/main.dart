@@ -16,7 +16,7 @@ class PortfolioApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'My Portfolio',
+      title: 'Athul V Gopalakrishnan',
       debugShowCheckedModeBanner: false,
       theme: themeData,
       home: const MyHomePage(),
@@ -41,9 +41,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
-
     return SafeArea(
       child: Scaffold(
           body: Stack(children: [
@@ -54,7 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              AboutMe(),
+              AboutMe(contactMeKey: contactMeKey),
               MyProjects(
                 projectsKey: projectsKey,
               ),

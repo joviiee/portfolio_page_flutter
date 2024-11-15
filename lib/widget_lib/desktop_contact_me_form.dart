@@ -15,46 +15,62 @@ class _DesktopContactMeFormState extends State<DesktopContactMeForm> {
   final _emailController = TextEditingController();
   final _feedbackController = TextEditingController();
 
-  void _submitForm() {
+  Future<void> _submitForm() async {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
     if (_formKey.currentState!.validate()) {
-      final Uri emailUri = Uri(
-        scheme: 'mailto',
-        path: 'abgvb1215@gmail.com', // Replace with your email
-        queryParameters: {
-          'subject': 'Feedback from ${_nameController.text}',
-          'body': 'Name: ${_nameController.text}\n'
-              'Email: ${_emailController.text}\n'
-              'Feedback: ${_feedbackController.text}'
-        },
-      );
-      launchUrl(emailUri);
+      // Construct the Gmail compose URL
+      final String email = 'abgvb1215@gmail.com';
+      final String subject =
+          Uri.encodeComponent('Feedback from ${_nameController.text}');
+      final String body = Uri.encodeComponent('Name: ${_nameController.text}\n'
+          'Email: ${_emailController.text}\n'
+          'Feedback: ${_feedbackController.text}');
+
+      final String url =
+          'https://mail.google.com/mail/u/0/?view=cm&fs=1&to=$email&su=$subject&body=$body';
+      final Uri emailUri = Uri.parse(url);
+
+      // Attempt to launch the URL
+      if (await launchUrl(emailUri)) {
+        scaffoldMessenger
+            .showSnackBar(SnackBar(content: Text("Redirecting to mail app")));
+      } else {
+        scaffoldMessenger.showSnackBar(
+            SnackBar(content: Text("Could not load resume at the moment")));
+      }
+    } else {
+      scaffoldMessenger
+          .showSnackBar(SnackBar(content: Text("Could not validate the form")));
     }
   }
 
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
-
-    dynamic formWidth,
+    int maxLines = 10;
+    double formWidth,
         seperatorWidth = 20,
-        maxLines = 10,
+        submitSize,
         buttonSeperatorHeight = 60,
-        buttonHeight,
         buttonWidth;
+    final RegExp mailExp =
+        RegExp(r'^([a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$');
 
     if (540 <= screenWidth && screenWidth <= 1024) {
       formWidth = 400;
       buttonSeperatorHeight = 40;
       buttonWidth = formWidth * 0.3;
+      submitSize = 15;
     } else if (1024 < screenWidth && screenWidth <= 1200) {
       formWidth = 500;
       buttonWidth = formWidth * 0.2;
+      submitSize = 20;
     } else {
       formWidth = 700;
       seperatorWidth = 40;
       maxLines = 12;
       buttonWidth = formWidth * 0.2;
+      submitSize = 20;
     }
 
     return Form(
@@ -91,8 +107,9 @@ class _DesktopContactMeFormState extends State<DesktopContactMeForm> {
                     fillColor: colorScheme.onPrimary,
                     filled: true,
                     contentPadding: EdgeInsets.all(10)),
-                validator: (value) =>
-                    value!.contains('@') ? null : 'Enter a valid email',
+                validator: (value) => mailExp.hasMatch(value ?? 'email')
+                    ? null
+                    : 'Enter a valid email',
               ),
             ),
           ]),
@@ -118,13 +135,17 @@ class _DesktopContactMeFormState extends State<DesktopContactMeForm> {
           SizedBox(height: buttonSeperatorHeight),
           ElevatedButton(
               onPressed: _submitForm,
-              child: Text(
-                'Submit',
-                // style: TextStyle(fontSize: screenWidth < 1000 ? 10 : 20),
-              ),
               style: ButtonStyle(
                   fixedSize: WidgetStatePropertyAll(
-                      Size(buttonWidth, buttonSeperatorHeight * 0.8)))),
+                      Size(buttonWidth, buttonSeperatorHeight * 0.9))),
+              child: Text(
+                'Submit',
+                style: TextStyle(
+                    fontSize: submitSize,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Ink Free',
+                    letterSpacing: 1),
+              )),
         ],
       ),
     );

@@ -15,33 +15,44 @@ class _MobileContactMeFormState extends State<MobileContactMeForm> {
   final _emailController = TextEditingController();
   final _feedbackController = TextEditingController();
 
-  void _submitForm() {
+  Future<void> _submitForm() async {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
     if (_formKey.currentState!.validate()) {
-      final Uri emailUri = Uri(
-        scheme: 'mailto',
-        path: 'your_email@example.com', // Replace with your email
-        queryParameters: {
-          'subject': 'Feedback from ${_nameController.text}',
-          'body': 'Name: ${_nameController.text}\n'
-              'Email: ${_emailController.text}\n'
-              'Feedback: ${_feedbackController.text}'
-        },
-      );
-      launchUrl(emailUri);
+      // Construct the Gmail compose URL
+      final String email = 'abgvb1215@gmail.com';
+      final String subject =
+          Uri.encodeComponent('Feedback from ${_nameController.text}');
+      final String body = Uri.encodeComponent('Name: ${_nameController.text}\n'
+          'Email: ${_emailController.text}\n'
+          'Feedback: ${_feedbackController.text}');
+
+      final String url =
+          'https://mail.google.com/mail/u/0/?view=cm&fs=1&to=$email&su=$subject&body=$body';
+      final Uri emailUri = Uri.parse(url);
+
+      // Attempt to launch the URL
+      if (await launchUrl(emailUri)) {
+        scaffoldMessenger
+            .showSnackBar(SnackBar(content: Text("Redirecting to mail app")));
+      } else {
+        scaffoldMessenger.showSnackBar(
+            SnackBar(content: Text("Could not load resume at the moment")));
+      }
+    } else {
+      scaffoldMessenger
+          .showSnackBar(SnackBar(content: Text("Could not validate the form")));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
-
 
     int maxLines = 7;
     double formWidth = 300;
-    double seperatorHeight = 10;
     double buttonSeperatorHeight = 40;
     double buttonWidth = formWidth * 0.3;
+    final RegExp mailExp =
+        RegExp(r'^([a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$');
 
     return Form(
       key: _formKey,
@@ -87,8 +98,9 @@ class _MobileContactMeFormState extends State<MobileContactMeForm> {
                   errorStyle: TextStyle(color: colorScheme.error),
                   contentPadding: EdgeInsets.all(6)),
               style: TextStyle(fontSize: 12),
-              validator: (value) =>
-                  value!.contains('@') ? null : 'Enter a valid email',
+              validator: (value) => mailExp.hasMatch(value ?? "email")
+                  ? null
+                  : 'Enter a valid email',
             ),
           ),
           SizedBox(
@@ -115,13 +127,17 @@ class _MobileContactMeFormState extends State<MobileContactMeForm> {
           SizedBox(height: buttonSeperatorHeight),
           ElevatedButton(
               onPressed: _submitForm,
-              child: Text(
-                'Submit',
-                style: TextStyle(fontSize: 10),
-              ),
               style: ButtonStyle(
                   fixedSize: WidgetStatePropertyAll(
-                      Size(buttonWidth, buttonSeperatorHeight * 0.8)))),
+                      Size(buttonWidth, buttonSeperatorHeight * 0.8))),
+              child: Text(
+                'Submit',
+                style: TextStyle(
+                    fontFamily: 'Ink Free',
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1),
+              )),
         ],
       ),
     );

@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:portfolio_page/data/projects_map.dart';
+import 'package:portfolio_page/models/projects_model.dart';
 import 'package:portfolio_page/theme/theme.dart';
 import 'package:portfolio_page/widget_lib/project_card.dart';
 
 class MyProjects extends StatelessWidget {
   final Key projectsKey;
 
-  const MyProjects({super.key, required this.projectsKey});
+  final List<ProjectsModel> projects = projectsMap.map((e) => ProjectsModel.fromMap(e)).toList();
+
+  MyProjects({super.key, required this.projectsKey});
 
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
-    dynamic titleSize;
-    dynamic containerPadding,
-        centralWidth,
+    double titleSize;
+    double centralWidth,
         crossAxisSpacing = 20,
         mainAxisSpacing,
         bottomPadding;
@@ -67,9 +69,9 @@ class MyProjects extends StatelessWidget {
                     crossAxisCount: crossAxisCount,
                     crossAxisSpacing: crossAxisSpacing,
                     mainAxisSpacing: mainAxisSpacing),
-                itemCount: 7,
+                itemCount: projects.length,
                 itemBuilder: (context, index) {
-                  return ProjectCard();
+                  return ProjectCard(project: projects[index]);
                 }),
           ),
         ],

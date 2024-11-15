@@ -1,39 +1,43 @@
 import 'package:flutter/material.dart';
+import 'package:portfolio_page/models/tech_icon_model.dart';
 import 'package:portfolio_page/theme/theme.dart';
 
 class SkillChip extends StatelessWidget {
-  const SkillChip({super.key});
+  final TechIconModel tech;
+  const SkillChip({super.key, required this.tech});
 
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
-    dynamic chipHeight, chipWidth;
-    dynamic iconSize, labelSize, labelPadding;
+    double labelSize, labelPadding;
 
     if (760 <= screenWidth && screenWidth <= 1024) {
-      iconSize = 20;
       labelSize = 12;
       labelPadding = 10;
     } else if (1024 < screenWidth && screenWidth <= 1200) {
-      iconSize = 20;
       labelSize = 12;
       labelPadding = 10;
     } else {
-      iconSize = 30;
       labelSize = 18;
       labelPadding = 15;
     }
 
     return Chip(
       elevation: 5,
-      avatar: Icon(
-        Icons.flutter_dash,
-        color: colorScheme.onPrimary,
-        size: iconSize,
+      avatar: CircleAvatar(
+        backgroundColor: colorScheme.onPrimary,
+        radius: 15,
+        child: ClipOval(
+          child: Image.asset(
+            tech.assetPath,
+            fit: BoxFit.cover,
+            width: 17,
+            height: 17,
+          ),
+        ),
       ),
-      label: const Text(
-        'flutter',
+      label: Text(
+        tech.name,
         style: TextStyle(fontWeight: FontWeight.w100),
       ),
       labelPadding: EdgeInsets.only(left: labelPadding),
