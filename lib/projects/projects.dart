@@ -64,6 +64,7 @@ class MyProjects extends StatelessWidget {
           SizedBox(
             width: centralWidth,
             child: GridView.builder(
+              physics: NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: crossAxisCount,

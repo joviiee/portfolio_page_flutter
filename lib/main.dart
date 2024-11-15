@@ -43,39 +43,40 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+          resizeToAvoidBottomInset: false,
           body: Stack(children: [
-        SingleChildScrollView(
-          controller: _scrollController,
-          physics: BouncingScrollPhysics(
-              decelerationRate: ScrollDecelerationRate.normal),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              AboutMe(contactMeKey: contactMeKey),
-              MyProjects(
+            SingleChildScrollView(
+              controller: _scrollController,
+              physics: BouncingScrollPhysics(
+                  decelerationRate: ScrollDecelerationRate.normal),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  AboutMe(contactMeKey: contactMeKey),
+                  MyProjects(
+                    projectsKey: projectsKey,
+                  ),
+                  MySkills(
+                    skillsKey: skillsKey,
+                  ),
+                  ContactMe(
+                    contactMeKey: contactMeKey,
+                  )
+                ],
+                // children: [ContactMe()],
+              ),
+            ),
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: MyMenuBar(
                 projectsKey: projectsKey,
-              ),
-              MySkills(
                 skillsKey: skillsKey,
-              ),
-              ContactMe(
                 contactMeKey: contactMeKey,
-              )
-            ],
-            // children: [ContactMe()],
-          ),
-        ),
-        Positioned(
-          top: 0,
-          left: 0,
-          right: 0,
-          child: MyMenuBar(
-            projectsKey: projectsKey,
-            skillsKey: skillsKey,
-            contactMeKey: contactMeKey,
-          ),
-        )
-      ])),
+              ),
+            )
+          ])),
     );
   }
 }

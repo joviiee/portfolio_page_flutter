@@ -54,6 +54,7 @@ class MySkills extends StatelessWidget {
             SizedBox(
               width: centralWidth,
               child: ListView.builder(
+                physics: NeverScrollableScrollPhysics(),
                 scrollDirection: Axis.vertical,
                 shrinkWrap: true,
                 itemCount: skills.length,
